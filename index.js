@@ -1,25 +1,19 @@
-//TODO make this whole thing account for having a 0th row of the title/info
-
 function adjustTrades() {
+	console.log('itworks')
 	currTrades = document.getElementById('trades');
-	oldTrades = currTrades.childElementCount;
+	oldTrades = currTrades.childElementCount - 2;
 	newTrades = document.getElementById('numTrades').value;
 	if (newTrades > oldTrades) {
 		for (var x = 0; x < newTrades - oldTrades; x++) {
-			makeTradeBox();
+			newTradeBox = document.getElementById('tradeBox').cloneNode(true);
+			newTradeBox.style.display = 'block';
+			document.getElementById('trades').appendChild(newTradeBox); //TODO make it so the original trade box doesn't appear
 		}
 	} else if (oldTrades > newTrades) {
 		for (var x = 0; x < oldTrades - newTrades; x++) {
-			currTrades.removeChild(currTrades.childNodes[-1]);
+			currTrades.removeChild(currTrades.lastChild);
 		}
-	}
-}
-
-function makeTradeBox() {
-	currTrades = document.getElementById('trades');
-	row = document.createElement('tr');
-	currTrades.appendChild()
-	for (x in cols) {//ISSUE fix
-		document.createElement('td')
+	} else {
+		console.log('woah')
 	}
 }
