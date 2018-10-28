@@ -2,7 +2,7 @@
 	session_start();
 
 	if (!isset($_SESSION['userData'])) {
-		header('location: login.php')
+		header('location: login.php');
 	}
 
 	$connect = mysqli_connect('localhost','[USERNAME]', '[PASSWORD]', '[DATABASE]');

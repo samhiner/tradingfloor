@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <?php
 
-	include('verify.php');
+	include('logic/verify.php');
 
 	//insert data into trade log
 	if (isset($_POST['stock'])) {
 		//TODO insert data into trades table
-		$_SESSION['userData']['id']
+		//$_SESSION['userData']['id']
+		echo 'works';
 	}
 
 ?>

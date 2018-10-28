@@ -5,7 +5,7 @@
 
 	session_start();
 
-	$connect = mysqli_connect('localhost','[USERNAME]', '[PASSWORD]', '[DATABASE]');
+	$connect = mysqli_connect('localhost','root', '', 'tradingfloor');
 
 	if (mysqli_connect_errno($connect)) {
 		echo '<script>alert("Failed to connect to server. Please reload. If this issue persists, alert the system admin");</script>';
@@ -26,7 +26,7 @@
 	}
 
 	//Attempt automatic login using session data
-	if isset($_SESSION['userData']) {
+	if (isset($_SESSION['userData'])) {
 		header('location: index.php');
 	}
 
