@@ -13,7 +13,7 @@
 
 	function query($query) {
 		global $connect;
-		mysqli_query($connect, $query);
+		return mysqli_query($connect, $query);
 	}
 
 	// LOGIN HANDLING
@@ -33,9 +33,9 @@
 	//Attempt login using inputted credentials
 	if (isset($_POST['username'])) {
 		$cleanUsername = cleanInput($_POST['username']);
-		$cleanPassword = hash('ripemd160', cleanInput($_POST['pass']));
+		$cleanPassword = hash('ripemd160', cleanInput($_POST['password']));
 
-		$result = mysqli_query($connect, "SELECT * FROM users WHERE username = '$cleanUsername' and password = '$cleanPassword");
+		$result = query("SELECT * FROM users WHERE username = '$cleanUsername' and password = '$cleanPassword'");
 		if (mysqli_num_rows($result) == 1) {
 			$_SESSION['userData'] = mysqli_fetch_array($result, MYSQLI_ASSOC);
 			header('location: index.php');
@@ -49,7 +49,7 @@
 	<h2>Login</h2>
 	<form method='post'>
 		Username: <input type='text' name='username'><br>
-		Password: <input type='password' name='pass'><br><br>
+		Password: <input type='password' name='password'><br><br>
 		<input type='submit' id='submit' value='Login'> or <a href='register.php'>Register</a>
 	</form>
 </body>

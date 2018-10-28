@@ -21,42 +21,44 @@ also do sql injection attack protection etc; this system should be robust and ha
 	<form method='post'>
 		<h2>Trading Simulator Round INPUT</h2>
 
-		Number of Trades: <input type='number' onkeydown='adjustTrades()' value='0' id='numTrades'><br><br>
+		Number of Trades: <input type='number' onkeyup='adjustTrades()' onclick='adjustTrades()' value='0' id='numTrades' onkeydown="return false"><br><br>
 
-		<table id='trades' border='1'>
-			<tr>
-				<th>Stock</th>
-				<th>Price</th>
-				<th>Amount</th>
-				<th>Traded With</th>
-				<th>Buy/Sell</th>
-			</tr>
-			<tr id='tradeBox' style='display: none'>
-				<td>
-					<select name='stock'>
-						<option disabled selected>Choose One</option>
-						<option value='apple'>Apple</option>
-						<option value='nestle'>Nestle</option>
-						<option value='walmart'>Walmart</option>
-					</select>
-				</td>
-				<td>
-					$<input type='number' name='price'>
-				</td>
-				<td>
-					<input type='number' name='quantity'>
-				</td>
-				<td>
-					<input type='text' name='partner'>
-				</td>
-				<td>
-					<select name='type'>
-						<option disabled selected>Choose One</option>
-						<option value='buy'>Buy</option>
-						<option value='sell'>Sell</option>
-					</select>
-				</td>
-			</tr>
+		<table border='1' id='tradeTable' style='display: none'>
+			<tbody id='trades'>
+				<tr>
+					<th width='99px'>Stock</th>
+					<th width='82px'>Price</th>
+					<th width='74px'>Amount</th>
+					<th width='154px'>Traded With</th>
+					<th width='99px'>Buy/Sell</th>
+				</tr>
+				<tr id='tradeBox' style='display: none'>
+					<td>
+						<select name='stock'>
+							<option disabled selected>Choose One</option>
+							<option value='apple'>Apple</option>
+							<option value='nestle'>Nestle</option>
+							<option value='walmart'>Walmart</option>
+						</select>
+					</td>
+					<td>
+						$<input type='number' name='price' style='width: 70px'>
+					</td>
+					<td>
+						<input type='number' name='quantity' style='width: 70px'>
+					</td>
+					<td>
+						<input type='text' name='partner' style='width: 150px'>
+					</td>
+					<td>
+						<select name='type'>
+							<option disabled selected>Choose One</option>
+							<option value='buy'>Buy</option>
+							<option value='sell'>Sell</option>
+						</select>
+					</td>
+				</tr>
+			</tbody>
 		</table>
 	</form>
 
