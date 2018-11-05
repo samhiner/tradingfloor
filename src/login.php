@@ -4,16 +4,12 @@
 	// BOILERPLATE
 
 	session_start();
+	include('logic/misc_funcs.php');
 
 	$connect = mysqli_connect('localhost','root', '', 'tradingfloor');
 
 	if (mysqli_connect_errno($connect)) {
 		echo '<script>alert("Failed to connect to server. Please reload. If this issue persists, alert the system admin");</script>';
-	}
-
-	function query($query) {
-		global $connect;
-		return mysqli_query($connect, $query);
 	}
 
 	// LOGIN HANDLING
@@ -35,7 +31,8 @@
 		$cleanUsername = cleanInput($_POST['username']);
 		$cleanPassword = hash('ripemd160', cleanInput($_POST['password']));
 
-		$result = query("SELECT * FROM users WHERE username = '$cleanUsername' and password = '$cleanPassword'");
+		$result = query('SELECT * FROM users WHERE username = ? and password = ?', 'ss', $cleanUsername, $cleanPassword);
+
 		if (mysqli_num_rows($result) == 1) {
 			$_SESSION['userData'] = mysqli_fetch_array($result, MYSQLI_ASSOC);
 			header('location: index.php');

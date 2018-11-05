@@ -1,5 +1,6 @@
 <?php
 	session_start();
+	include('misc_funcs.php');
 
 	if (!isset($_SESSION['userData'])) {
 		header('location: login.php');
@@ -11,8 +12,4 @@
 		echo '<script>alert("Failed to connect to server. Please reload. If this issue persists, alert the system admin");</script>';
 	}
 
-	function query($query) {
-		global $connect;
-		return mysqli_query($connect, $query);
-	}
 ?>
