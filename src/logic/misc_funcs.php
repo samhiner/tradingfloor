@@ -1,5 +1,6 @@
 <?php
 
+	//TODO could automatically do format
 	function query($prepared, $format, ...$insertVals) {
 		global $connect;
 		$select = $connect->prepare($prepared);

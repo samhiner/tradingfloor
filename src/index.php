@@ -5,9 +5,17 @@
 
 	//insert data into trade log
 	if (isset($_POST['stock'])) {
-		//TODO insert data into trades table
-		//$_SESSION['userData']['id']
-		echo 'works';
+		$inputSizes = [count($_POST['stock']), count($POST['price']), count($POST['quantity']), count($POST['partner']), count($POST['transactType'])];
+		#TODO this can be broken if one value is missing in every column at different places
+		if (count(array_unique($inputSizes)) == 1) {
+			for ($x = 0; $x < $_POST['numTrades']; $x++) {
+				#TODO if price is a full num and positive and any other necessary input validation. that should be all but idk
+				#if ($_POST['price'][$x] > 0 || $_POST[''] )
+				#query('INSERT INTO trades(stock, price, quantity, partner, transactType) VALUES(?, ?, ?, ?, ?)', 'siiss', $_POST['stock'][$x], $POST['price'][$x], $POST['quantity'][$x], $POST['partner'][$x], $POST['transactType'][$x]);
+			}
+		} else {
+			echo "<script>alert('All rows are not filled out.');</script>";
+		}
 	}
 
 ?>
@@ -21,7 +29,7 @@ also do sql injection attack protection etc; this system should be robust and ha
 	<form method='post'>
 		<h2>Trading Simulator Round INPUT</h2>
 
-		Number of Trades: <input type='number' onkeyup='adjustTrades()' onclick='adjustTrades()' value='0' id='numTrades' onkeydown="return false"><br><br>
+		Number of Trades: <input type='number' onkeyup='adjustTrades()' onclick='adjustTrades()' value='0' id='numTrades' name='numTrades' onkeydown="return false"><br><br>
 
 		<table border='1' id='tradeTable' style='display: none'>
 			<tbody id='trades'>
@@ -34,7 +42,7 @@ also do sql injection attack protection etc; this system should be robust and ha
 				</tr>
 				<tr id='tradeBox' style='display: none'>
 					<td>
-						<select name='stock'>
+						<select name='stock[]'>
 							<option disabled selected>Choose One</option>
 							<option value='apple'>Apple</option>
 							<option value='nestle'>Nestle</option>
@@ -42,16 +50,17 @@ also do sql injection attack protection etc; this system should be robust and ha
 						</select>
 					</td>
 					<td>
-						$<input type='number' name='price' style='width: 70px'>
+						$<input type='number' name='price[]' style='width: 70px' onkeydown='return (event.keyCode != 190);'>
 					</td>
 					<td>
-						<input type='number' name='quantity' style='width: 70px'>
+						<input type='number' name='quantity[]' style='width: 70px' onkeydown='return (event.keyCode != 190);'>
 					</td>
 					<td>
-						<input type='text' name='partner' style='width: 150px'>
+						<!--TODO make this a list so people don't mess up-->
+						<input type='text' name='partner[]' style='width: 150px'>
 					</td>
 					<td>
-						<select name='type'>
+						<select name='transactType[]'>
 							<option disabled selected>Choose One</option>
 							<option value='buy'>Buy</option>
 							<option value='sell'>Sell</option>
@@ -60,6 +69,8 @@ also do sql injection attack protection etc; this system should be robust and ha
 				</tr>
 			</tbody>
 		</table>
+
+		<input type='submit'>
 	</form>
 
 </body>
