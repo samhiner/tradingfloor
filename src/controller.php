@@ -37,6 +37,7 @@
 					//change the next round and re-open trading
 				} elseif ($_POST['adminAct'] == 'End Game') {
 					echo 'you sure';
+					//get winner and cool stats
 				} elseif ($_POST['adminAct'] == 'Logout') {
 					unset($_SESSION['isAdmin']);
 					echo "<meta http-equiv='refresh' content='0'>";
@@ -54,7 +55,12 @@
 
 			<input type='submit' name='adminAct' value='End Game'><br><br> <!--TODO are you sure-->
 
-			<input type='submit' name='adminAct' value='Logout'>
+			<b>Nontraders:</b><br>
+			<ul>
+				<?php echo 'ok'; ?>
+			</ul><br><br>
+
+			<input type='submit' name='adminAct' value='Logout'><br><br>
 		</form>
 
 	<?php else: ?>

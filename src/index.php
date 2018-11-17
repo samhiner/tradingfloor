@@ -3,19 +3,43 @@
 
 	include('logic/verify.php');
 
-	//insert data into trade log
-	if (isset($_POST['stock'])) {
-		$inputSizes = [count($_POST['stock']), count($POST['price']), count($POST['quantity']), count($POST['partner']), count($POST['transactType'])];
-		#TODO this can be broken if one value is missing in every column at different places
-		if (count(array_unique($inputSizes)) == 1) {
-			for ($x = 0; $x < $_POST['numTrades']; $x++) {
-				#TODO if price is a full num and positive and any other necessary input validation. that should be all but idk
-				#if ($_POST['price'][$x] > 0 || $_POST[''] )
-				#query('INSERT INTO trades(stock, price, quantity, partner, transactType) VALUES(?, ?, ?, ?, ?)', 'siiss', $_POST['stock'][$x], $POST['price'][$x], $POST['quantity'][$x], $POST['partner'][$x], $POST['transactType'][$x]);
+	function insertData() {
+		$inputs = ['stock', 'price', 'amt', 'partner', 'transactType'];
+
+		//make sure every column has data in it, or an error will be triggered later
+		for ($x = 0; $x < 5; $x++) {
+			if (!isset($_POST[$inputs[$x]])) {
+				echo "<script>alert('Not all rows are filled out.');</script>";
+				return false;
+			} else {
+				//remove empty spaces from the arrays of each colum
+				//<ul> doesnt keep track of empty spaces so without this <input>s and <ul>s are offset
+				$_POST[$inputs[$x]] = array_values(array_diff($_POST[$inputs[$x]], ['']));
+
+				//set the corresponding section of the inputs array to the number filled <input>s in that column
+				$inputs[$x] = count($_POST[$inputs[$x]]);
 			}
+		}
+
+		//TODO this can be broken if one value is missing in every column at different places
+		//make sure that there is the same number of answers for each column
+		if (count(array_unique($inputs)) == 1) {
+			for ($x = 0; $x < $inputs[0]; $x++) {
+				if ($_POST['price'][$x] > 0 && $_POST['amt'][$x] > 0) {
+					query('INSERT INTO trades(trader, stock, price, amt, partner, transactType) VALUES(?, ?, ?, ?, ?, ?)', 'ssiiss', $_SESSION['userData']['username'], $_POST['stock'][$x], $_POST['price'][$x], $_POST['amt'][$x], $_POST['partner'][$x], $_POST['transactType'][$x]);
+				} else {
+					echo "<script>alert('If see this, please contact your game administrator. Non-natural number error.');</script>";
+				}
+			}
+			echo "<script>alert('Table successfully submitted!');</script>";
 		} else {
 			echo "<script>alert('All rows are not filled out.');</script>";
 		}
+	}
+
+	//insert data into trade log
+	if (isset($_POST['submitStockData'])) {
+		insertData();
 	}
 
 ?>
@@ -24,12 +48,14 @@
 	<title>Trading Pit Simulator</title>
 </head>
 <!--NOTE: will have to do a setup where you put in your name and password to make sure there are no duplicates and so I have password on record
-also do sql injection attack protection etc; this system should be robust and handle stuff like negative numbers-->
+also do sql injection attack protection etc; this system should be robust and handle stuff like negative numbers
+
+//TODO make it so you dont have to include file endings in urls-->
 <body>
 	<form method='post'>
 		<h2>Trading Simulator Round INPUT</h2>
 
-		Number of Trades: <input type='number' onkeyup='adjustTrades()' onclick='adjustTrades()' value='0' id='numTrades' name='numTrades' onkeydown="return false"><br><br>
+		Number of Trades: <input type='number' onclick='adjustTradeTable()' value='0' id='numTrades' name='numTrades' onkeydown="return false"><br><br>
 
 		<table border='1' id='tradeTable' style='display: none'>
 			<tbody id='trades'>
@@ -50,10 +76,10 @@ also do sql injection attack protection etc; this system should be robust and ha
 						</select>
 					</td>
 					<td>
-						$<input type='number' name='price[]' style='width: 70px' onkeydown='return (event.keyCode != 190);'>
+						$<input type='number' id='price' name='price[]' style='width: 70px' onkeydown='return (event.keyCode != 190 && event.keyCode != 189);' onkeyup='return numInputVal(event.target)' onclick='return numInputVal(event.target)'>
 					</td>
 					<td>
-						<input type='number' name='quantity[]' style='width: 70px' onkeydown='return (event.keyCode != 190);'>
+						<input type='number' id='amt' name='amt[]' style='width: 70px' onkeydown='return (event.keyCode != 190 && event.keyCode != 189);' onkeyup='return numInputVal(event.target)' onclick='return numInputVal(event.target)'>
 					</td>
 					<td>
 						<!--TODO make this a list so people don't mess up-->
@@ -62,15 +88,15 @@ also do sql injection attack protection etc; this system should be robust and ha
 					<td>
 						<select name='transactType[]'>
 							<option disabled selected>Choose One</option>
-							<option value='buy'>Buy</option>
-							<option value='sell'>Sell</option>
+							<option value='1'>Buy</option>
+							<option value='0'>Sell</option>
 						</select>
 					</td>
 				</tr>
 			</tbody>
-		</table>
+		</table><br>
 
-		<input type='submit'>
+		<input type='submit' name='submitStockData'>
 	</form>
 
 </body>

@@ -14,13 +14,6 @@
 
 	// REGISTERING
 
-	function cleanInput($data) {
-		$data = trim($data);
-		$data = stripslashes($data);
-		$data = htmlspecialchars($data);
-		return $data;
-	}
-
 	//attempt automatic login using session data
 	if (isset($_SESSION['userData'])) {
 		header('location: index.php');
@@ -71,8 +64,8 @@
 <body>
 	<h2>Register</h2>
 	<form method='post'>
-		Username: <input type='text' name='username' id='username' onkeyup='inputVal()'><br>
-		Password: <input type='password' name='password' id='password' onkeyup='inputVal()'><br>
+		Username: <input type='text' name='username' id='username' onkeydown='inputVal()'><br>
+		Password: <input type='password' name='password' id='password' onkeydown='inputVal()'><br>
 		Confirm Password: <input type='password' name='passwordConf' id='passwordConf' onkeyup='inputVal()'><br><br>
 		<input type='submit' id='submit' value='Register' disabled> or <a href='login.php'>Login</a><br><br>
 	</form>

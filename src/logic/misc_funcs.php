@@ -11,4 +11,12 @@
 		return $result;
 	}
 
+	function cleanInput($data) { //TODO make sure this actually prevents injection
+		$data = trim($data);
+		$data = stripslashes($data);
+		$data = htmlspecialchars($data);
+		$data = strtolower($data);
+		return $data;
+	}
+
 ?>

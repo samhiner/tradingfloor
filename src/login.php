@@ -14,13 +14,6 @@
 
 	// LOGIN HANDLING
 
-	function cleanInput($data) { //TODO make sure this actually prevents injection
-		$data = trim($data);		//TODO make it so you dont have to include file endings in urls
-		$data = stripslashes($data);//TODO fix headers and write that really cool gui application in notes
-		$data = htmlspecialchars($data);
-		return $data;
-	}
-
 	//Attempt automatic login using session data
 	if (isset($_SESSION['userData'])) {
 		header('location: index.php');

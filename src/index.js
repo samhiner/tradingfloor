@@ -1,4 +1,4 @@
-function adjustTrades() {
+function adjustTradeTable() {
 	currTrades = document.getElementById('trades');
 	oldTrades = currTrades.childElementCount - 2;
 	newTrades = document.getElementById('numTrades').value;
@@ -27,7 +27,11 @@ function adjustTrades() {
 		for (var x = 0; x < oldTrades - newTrades; x++) {
 			currTrades.removeChild(currTrades.lastChild);
 		}
-	} else {
-		console.log('woah')
+	}
+}
+
+function numInputVal(element) {
+	if (element.value <= 0) {
+		element.value = '';
 	}
 }
