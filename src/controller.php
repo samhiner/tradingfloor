@@ -10,6 +10,7 @@
 <body>
 	<?php
 		session_start();
+		include('logic/exectrades.php');
 
 		//login
 		if (isset($_POST['adminPass'])) {
@@ -23,21 +24,14 @@
 			}
 		}
 
-		//logout
-		if (isset($POST['adminLogout'])) {
-			unset($_SESSION['isAdmin']);
-		}
-
-		if (isset($_SESSION['isAdmin'])) {
-			if (isset($_POST['adminAct'])) {
+		if (isset($_POST['adminAct'])) {
+			if (isset($_SESSION['isAdmin'])) {
 				if ($_POST['adminAct'] == 'End Round') {
-					echo 'gotcha';
-					//close trading
-					//do calculations and add balances
-					//change the next round and re-open trading
+					nextRound();
+					//echo "<meta http-equiv='refresh' content='0'>";
 				} elseif ($_POST['adminAct'] == 'End Game') {
-					echo 'you sure';
-					//get winner and cool stats
+					endGame();
+					echo "<meta http-equiv='refresh' content='0'>";
 				} elseif ($_POST['adminAct'] == 'Logout') {
 					unset($_SESSION['isAdmin']);
 					echo "<meta http-equiv='refresh' content='0'>";
@@ -57,8 +51,8 @@
 
 			<b>Nontraders:</b><br>
 			<ul>
-				<?php echo 'ok'; ?>
-			</ul><br><br>
+				<?php echo '<li>ok</li>'; ?>
+			</ul><br>
 
 			<input type='submit' name='adminAct' value='Logout'><br><br>
 		</form>

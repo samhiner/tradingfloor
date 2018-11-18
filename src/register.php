@@ -6,12 +6,6 @@
 	session_start();
 	include('logic/misc_funcs.php');
 
-	$connect = mysqli_connect('localhost','root', '', 'tradingfloor');
-
-	if (mysqli_connect_errno($connect)) {
-		echo '<script>alert("Failed to connect to server. Please reload. If this issue persists, alert the system admin");</script>';
-	}
-
 	// REGISTERING
 
 	//attempt automatic login using session data

@@ -3,6 +3,7 @@
 
 	include('logic/verify.php');
 
+	//insert data into trade log
 	function insertData() {
 		$inputs = ['stock', 'price', 'amt', 'partner', 'transactType'];
 
@@ -37,7 +38,6 @@
 		}
 	}
 
-	//insert data into trade log
 	if (isset($_POST['submitStockData'])) {
 		insertData();
 	}
@@ -47,10 +47,6 @@
 <head>
 	<title>Trading Pit Simulator</title>
 </head>
-<!--NOTE: will have to do a setup where you put in your name and password to make sure there are no duplicates and so I have password on record
-also do sql injection attack protection etc; this system should be robust and handle stuff like negative numbers
-
-//TODO make it so you dont have to include file endings in urls-->
 <body>
 	<form method='post'>
 		<h2>Trading Simulator Round INPUT</h2>
@@ -82,7 +78,6 @@ also do sql injection attack protection etc; this system should be robust and ha
 						<input type='number' id='amt' name='amt[]' style='width: 70px' onkeydown='return (event.keyCode != 190 && event.keyCode != 189);' onkeyup='return numInputVal(event.target)' onclick='return numInputVal(event.target)'>
 					</td>
 					<td>
-						<!--TODO make this a list so people don't mess up-->
 						<input type='text' name='partner[]' style='width: 150px'>
 					</td>
 					<td>
