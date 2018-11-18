@@ -20,7 +20,7 @@
 		}
 	}
 
-	function cleanInput($data) { //TODO make sure this actually prevents injection
+	function cleanInput($data) {
 		$data = trim($data);
 		$data = stripslashes($data);
 		$data = htmlspecialchars($data);

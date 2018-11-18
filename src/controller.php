@@ -26,13 +26,14 @@
 
 		if (isset($_POST['adminAct'])) {
 			if (isset($_SESSION['isAdmin'])) {
-				if ($_POST['adminAct'] == 'End Round') {
-					nextRound();
-					//echo "<meta http-equiv='refresh' content='0'>";
-				} elseif ($_POST['adminAct'] == 'End Game') {
+				if ($_POST['adminAct'] === 'End Round') {
+					endRound();
+					echo "<meta http-equiv='refresh' content='0'>";
+				} elseif ($_POST['adminAct'] === 'End Game') {
+					endRound();
 					endGame();
 					echo "<meta http-equiv='refresh' content='0'>";
-				} elseif ($_POST['adminAct'] == 'Logout') {
+				} elseif ($_POST['adminAct'] === 'Logout') {
 					unset($_SESSION['isAdmin']);
 					echo "<meta http-equiv='refresh' content='0'>";
 				}
