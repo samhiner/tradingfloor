@@ -19,43 +19,72 @@ function flipTradeSide($trade) {
 }
 
 function execTrade($trade) {
+	//make sure we are looking at the buyers perspective
 	if ($trade['transactType'] === 0) {
 		$trade = flipTradeSide($trade);
 	}
 
-	//update buyer's acct
-	query("UPDATE users SET balance = balance - " . $trade["price"] . ", " . $trade["stock"] . " = " . $trade["stock"] . " + " . $trade["amt"] . " WHERE username = '" . $trade["trader"] . "';");
-	//update seller's acct
-	query("UPDATE users SET balance = balance + " . $trade["price"] . ", " . $trade["stock"] . " = " . $trade["stock"] . " - " . $trade["amt"] . " WHERE username = '" . $trade["partner"] . "';");
+	$buyer = mysqli_fetch_assoc(query('SELECT * FROM users WHERE username = ?', 's', $trade['trader']));
+	$seller = mysqli_fetch_assoc(query('SELECT * FROM users WHERE username = ?', 's', $trade['partner']));
+
+	if (($buyer['balance'] - $trade['price'] >= 0) && ($seller[$trade['stock']] - $trade['amt'] >= 0)) {
+		//update buyer's acct
+		query("UPDATE users SET balance = balance - ?, " . $trade["stock"] . " = " . $trade["stock"] . " + ? WHERE username = ?", 'iis',  $trade["price"], $trade["amt"], $trade["trader"]);
+		//update seller's acct
+		query("UPDATE users SET balance = balance + ?, " . $trade["stock"] . " = " . $trade["stock"] . " - ? WHERE username = ?", 'iis',  $trade["price"], $trade["amt"], $trade["partner"]);
+		return true;
+	} else {
+		return false;
+	}
 }
 
-//TODO write full description
-//returns all of the trades that were not fulfilled
 function matchTrades() {
 	$trades = query('SELECT * FROM trades');
 	$register = [];
+	$failedTrades = [];
 	while ($row = mysqli_fetch_array($trades, MYSQLI_ASSOC)) {
 		$oppTrade = flipTradeSide($row);
 		$match = array_search($oppTrade, $register);
 
 		if ($match !== false) {
 			array_splice($register, $match, 1);
-			execTrade($row);
+			$tradeSuccess = execTrade($row);
+
+			if (!$tradeSuccess) {
+				$row['transactType'] = 2;
+				array_push($failedTrades, $row);
+			}
 		} else {
 			array_push($register, $row);
 		}
 	}
 
 	query('DELETE FROM trades');
-	return $register;
+
+	//add the failed trades back into the database
+	foreach (array_merge($register, $failedTrades) as $row) {
+		query('INSERT INTO trades(trader, stock, price, amt, partner, transactType) VALUES(?, ?, ?, ?, ?, ?)', 'ssiisi', 
+			$row['trader'], 
+			$row['stock'], 
+			$row['price'],
+			$row['amt'],
+			$row['partner'],
+			$row['transactType']
+		);
+
+	}
 }
 
 function endRound() {
-	query('UPDATE status SET canTrade = 1');
-	$leftover = matchTrades();
-	query('UPDATE status SET canTrade = 1, round = round + 1');
+	query('UPDATE status SET canTrade = 0');
+	return matchTrades();
+}
 
-	return $leftover;
+function startRound() {
+	//delete any remaining failed trades
+	query('DELETE FROM trades');
+
+	query('UPDATE status SET canTrade = 1, round = round + 1');
 }
 
 function startGame() {

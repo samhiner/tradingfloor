@@ -27,36 +27,69 @@
 		if (isset($_POST['adminAct'])) {
 			if (isset($_SESSION['isAdmin'])) {
 				if ($_POST['adminAct'] === 'End Round') {
+					echo 'sdadsa';
 					endRound();
-					echo "<meta http-equiv='refresh' content='0'>";
 				} elseif ($_POST['adminAct'] === 'End Game') {
-					endRound();
 					endGame();
-					echo "<meta http-equiv='refresh' content='0'>";
 				} elseif ($_POST['adminAct'] === 'Logout') {
 					unset($_SESSION['isAdmin']);
-					echo "<meta http-equiv='refresh' content='0'>";
+				} elseif ($_POST['adminAct'] === 'Start Game') {
+					startGame();
+				} elseif ($_POST['adminAct'] === 'Start Round') {
+					startRound();					
+				} elseif ($_POST['adminAct'] === 'Match Trades') {
+					query($_POST['adminSQL']);
+					matchTrades();
 				}
+				echo "<meta http-equiv='refresh' content='0'>";
 			}
 		}
+
+		$status = mysqli_fetch_assoc(query('SELECT * FROM status'));
+		$trades = query('SELECT * FROM trades');
 	?>
 
 	<?php if (isset($_SESSION['isAdmin'])): ?>
 
-		Current Round: <br>
-		Number of Trades: <br><br>
-		<form method='post'>
-			<input type='submit' name='adminAct' value='End Round'><br><br>
+		<?php if (($status['round'] != -1) && ($status['round'] != 0)): ?>
+			Current Round: <?php echo $status['round']; ?><br>
+			Trading? <?php echo $status['canTrade'] ?><br>
+			Number of Trades: <?php echo mysqli_num_rows($trades); ?><br><br>
 
-			<input type='submit' name='adminAct' value='End Game'><br><br> <!--TODO are you sure-->
+			<form method='post'>
+				<?php if ($status['canTrade'] == 1): ?>
+					<input type='submit' name='adminAct' value='End Round'><br><br>
+				<?php else: ?>
+					<input type='submit' name='adminAct' value='Start Round'><br><br>
+					<input type='submit' name='adminAct' value='End Game'><br><br>
+				<?php endif; ?>
 
-			<b>Nontraders:</b><br>
-			<ul>
-				<?php echo '<li>ok</li>'; ?>
-			</ul><br>
+				<?php if ($status['canTrade'] != 1): ?>
+					<b>Failed Trades</b>
+					<ul>
+					<?php
+						while ($row = mysqli_fetch_assoc($trades)) {
+							echo '<li>' . $row['trader'] . ' ' . $row['partner'] . ' $' .  $row['price'] . ' ' . $row['amt'] . ' ' . $row['transactType'] . ' ' . $row['stock'] . '</li>';
+						}
+					?>
+					</ul><br>
 
-			<input type='submit' name='adminAct' value='Logout'><br><br>
-		</form>
+					<textarea name='adminSQL' rows="4" cols="50">
+						This is a terrible idea. Fix if used more than once.
+					</textarea><br>
+
+					<input type='submit' name='adminAct' value='Match Trades'><br><br><br>
+				<?php endif; ?>
+
+				<input type='submit' name='adminAct' value='Logout'><br><br>
+			</form>
+		<?php elseif ($status['round'] == 0): ?>
+			<form method='post'>
+				<input type='submit' name='adminAct' value='Start Game'><br><br>
+			</form>
+		<?php else: ?>
+			Game Over
+		<?php endif; ?>
 
 	<?php else: ?>
 
