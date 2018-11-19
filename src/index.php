@@ -38,62 +38,86 @@
 		}
 	}
 
+	$status = mysqli_fetch_assoc(query('SELECT * FROM status'));
+
 	if (isset($_POST['submitStockData'])) {
-		insertData();
+		//I don't use a var here bc I want to get fresh data on each request
+		if ($status['canTrade']) {
+			insertData();
+		}
 	}
 
 ?>
 <html>
 <head>
 	<title>Trading Pit Simulator</title>
+	<script src='http://code.jquery.com/jquery-3.3.1.min.js'></script>
 </head>
 <body>
-	<form method='post'>
-		<h2>Trading Simulator Round INPUT</h2>
+	<?php if ($status['canTrade'] == 1): ?>
+		<form method='post'>
+			<h2>Trading Simulator Round INPUT</h2>
 
-		Number of Trades: <input type='number' onclick='adjustTradeTable()' value='0' id='numTrades' name='numTrades' onkeydown="return false"><br><br>
+			Number of Trades: <input type='number' onclick='adjustTradeTable()' value='0' id='numTrades' name='numTrades' onkeydown="return false"><br><br>
 
-		<table border='1' id='tradeTable' style='display: none'>
-			<tbody id='trades'>
-				<tr>
-					<th width='99px'>Stock</th>
-					<th width='82px'>Price</th>
-					<th width='74px'>Amount</th>
-					<th width='154px'>Traded With</th>
-					<th width='99px'>Buy/Sell</th>
-				</tr>
-				<tr id='tradeBox' style='display: none'>
-					<td>
-						<select name='stock[]'>
-							<option disabled selected>Choose One</option>
-							<option value='apple'>Apple</option>
-							<option value='nestle'>Nestle</option>
-							<option value='walmart'>Walmart</option>
-						</select>
-					</td>
-					<td>
-						$<input type='number' id='price' name='price[]' style='width: 70px' onkeydown='return (event.keyCode != 190 && event.keyCode != 189);' onkeyup='return numInputVal(event.target)' onclick='return numInputVal(event.target)'>
-					</td>
-					<td>
-						<input type='number' id='amt' name='amt[]' style='width: 70px' onkeydown='return (event.keyCode != 190 && event.keyCode != 189);' onkeyup='return numInputVal(event.target)' onclick='return numInputVal(event.target)'>
-					</td>
-					<td>
-						<input type='text' name='partner[]' style='width: 150px'>
-					</td>
-					<td>
-						<select name='transactType[]'>
-							<option disabled selected>Choose One</option>
-							<option value='1'>Buy</option>
-							<option value='0'>Sell</option>
-						</select>
-					</td>
-				</tr>
-			</tbody>
-		</table><br>
+			<table border='1' id='tradeTable' style='display: none'>
+				<tbody id='trades'>
+					<tr>
+						<th width='99px'>Stock</th>
+						<th width='82px'>Price</th>
+						<th width='74px'>Amount</th>
+						<th width='154px'>Traded With</th>
+						<th width='99px'>Buy/Sell</th>
+					</tr>
+					<tr id='tradeBox' style='display: none'>
+						<td>
+							<select name='stock[]'>
+								<option disabled selected>Choose One</option>
+								<option value='apple'>Apple</option>
+								<option value='nestle'>Nestle</option>
+								<option value='walmart'>Walmart</option>
+							</select>
+						</td>
+						<td>
+							$<input type='number' id='price' name='price[]' style='width: 70px' onkeydown='return (event.keyCode != 190 && event.keyCode != 189);' onkeyup='return numInputVal(event.target)' onclick='return numInputVal(event.target)'>
+						</td>
+						<td>
+							<input type='number' id='amt' name='amt[]' style='width: 70px' onkeydown='return (event.keyCode != 190 && event.keyCode != 189);' onkeyup='return numInputVal(event.target)' onclick='return numInputVal(event.target)'>
+						</td>
+						<td>
+							<input type='text' name='partner[]' style='width: 150px'>
+						</td>
+						<td>
+							<select name='transactType[]'>
+								<option disabled selected>Choose One</option>
+								<option value='1'>Buy</option>
+								<option value='0'>Sell</option>
+							</select>
+						</td>
+					</tr>
+				</tbody>
+			</table><br>
 
-		<input type='submit' name='submitStockData'>
-	</form>
+			<input type='submit' name='submitStockData'>
+		</form>
+	<?php else: ?>
+		Wait for next round.
+	<?php endif; ?>
 
 </body>
+<script>
+	var round = <?php echo $status['round']; ?>;
+	var canTrade = <?php echo $status['canTrade']; ?>;
+
+	setInterval(function() {
+		$.get('status.php', function(data) {
+			[round, canTrade] = data.split(',');
+		})
+		if (round != <?php echo $status['round']; ?> || canTrade != <?php echo $status['canTrade']; ?>) {
+			location.reload();
+		}
+	}, 1000);
+</script>
+
 <script src='index.js'></script>
 </html>
