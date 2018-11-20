@@ -80,10 +80,21 @@ function endRound() {
 	return matchTrades();
 }
 
+function orderAssign() {
+	$allUsers = query('SELECT * FROM users'); //TODO this takes everyone who has ever signed up. I need to differentiate acct and profile.
+	
+	while ($user = mysqli_fetch_assoc($allUsers)) {
+		?[0], ?[1], ?[2];//TODO should alternate 1 2 3 then 2 3 1 then 3 1 2
+		query('UPDATE users SET aquota = ?, nquota = ?, wquota = ? WHERE username = ?', 'iiis', ?[0], ?[1], ?[2], $user['username']);
+	}
+}
+
 function startRound() {
 	//delete any remaining failed trades
 	query('DELETE FROM trades');
 
+	orderAssign();
+	
 	query('UPDATE status SET canTrade = 1, round = round + 1');
 }
 
