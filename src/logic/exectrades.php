@@ -64,20 +64,49 @@ function matchTrades() {
 	//add the failed trades back into the database
 	foreach (array_merge($register, $failedTrades) as $row) {
 		query('INSERT INTO trades(trader, stock, price, amt, partner, transactType) VALUES(?, ?, ?, ?, ?, ?)', 'ssiisi', 
-			$row['trader'], 
-			$row['stock'], 
+			$row['trader'],
+			$row['stock'],
 			$row['price'],
 			$row['amt'],
 			$row['partner'],
 			$row['transactType']
 		);
+	}
+}
 
+//TODO refactor
+function collectQuotas() {
+	$allUsers = query('SELECT * FROM users');
+	$companies = ['apple', 'nestle', 'walmart'];
+	$quotas = ['aprice', 'nprice', 'wprice'];
+
+	while ($user = mysqli_fetch_assoc($allUsers)) {
+		if ($user['quotatypes'] === NULL) {
+			continue;
+		}
+
+		$quotaTypes = str_split($user['quotatypes']);
+
+		for ($x = 0; $x < 3; $x++) {
+			if ($quotaTypes[$x] === '1') {
+				if ($user[$companies[$x]] > 0) {
+					query('UPDATE users SET ' . $companies[$x] . ' = ' . $companies[$x] . ' - 1 WHERE username = ?', 's', $user['username']);
+				} else {
+					query('UPDATE users SET balance = balance - ? WHERE username = ?', 'is', intval($user[$quotas[$x]] * 1.1), $user['username']);
+				}
+			} else {
+				query('UPDATE users SET balance = balance - ? WHERE username = ?', 'is', $user[$quotas[$x]], $user['username']);
+			}
+		}
+
+		query('UPDATE users SET quotatypes = NULL');
 	}
 }
 
 function endRound() {
 	query('UPDATE status SET canTrade = 0');
-	return matchTrades();
+
+	matchTrades();
 }
 
 //get $numRand unique random numbers between $min and $max (inclusive)
@@ -127,20 +156,31 @@ function orderAssign() {
 		//this means that if there are an odd number of people there will be one more seller than buyer
 		
 		$type = [];
+		$quotas = [];
 		for ($y = 0; $y < 3; $y++) {
 			if (in_array($x, $buyers[$y])) {
 				array_push($type, 1);
+				$newQuota = getQuota($round, 1);
+				array_push($quotas, $newQuota);
+
+				query('UPDATE users SET balance = balance + ? WHERE username = ?', 'is', $newQuota, $user['username']);
 			} else {
 				array_push($type, 0);
+				$newQuota = getQuota($round, 0);
+				array_push($quotas, $newQuota);
+
+				$currCompany = ['apple', 'nestle', 'walmart'][$y];
+				query('UPDATE users SET ' . $currCompany . ' = ' . $currCompany . ' + 1 WHERE username = ?', 's', $user['username']);
 			}
 		}
 
 		query('UPDATE users SET aprice = ?, nprice = ?, wprice = ?, quotatypes = ? WHERE username = ?', 'iiiss', 
-			getQuota($round, $type[0]), 
-			getQuota($round, $type[1]), 
-			getQuota($round, $type[2]), 
+			$quotas[0],
+			$quotas[1],
+			$quotas[2],
 			strval(implode($type)), 
-			$user['username']);
+			$user['username']
+		);
 		$x++;
 	}
 }
@@ -148,7 +188,7 @@ function orderAssign() {
 function startRound() {
 	//delete any remaining failed trades and quotas
 	query('DELETE FROM trades');
-	query("UPDATE users SET aprice = 0, nprice = 0, wprice = 0, quotatypes = '000'");
+	query("UPDATE users SET aprice = 0, nprice = 0, wprice = 0, quotatypes = NULL"); //TODO is this necessary?
 
 	orderAssign();
 	
@@ -156,7 +196,7 @@ function startRound() {
 }
 
 function startGame() {
-	query('UPDATE status SET canTrade = 1, round = 1');
+	startRound();
 }
 
 function endGame() {

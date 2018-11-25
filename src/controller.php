@@ -39,8 +39,9 @@
 				} elseif ($_POST['adminAct'] === 'Match Trades') {
 					query($_POST['adminSQL']);
 					matchTrades();
+					collectQuotas();
 				}
-				echo "<meta http-equiv='refresh' content='0'>";
+				//echo "<meta http-equiv='refresh' content='0'>";
 			}
 		}
 
@@ -73,9 +74,7 @@
 					?>
 					</ul><br>
 
-					<textarea name='adminSQL' rows="4" cols="50">
-						This is a terrible idea. Fix if used more than once.
-					</textarea><br>
+					<textarea name='adminSQL' rows="4" cols="50">SELECT * FROM users</textarea><br>
 
 					<input type='submit' name='adminAct' value='Match Trades'><br><br><br>
 				<?php endif; ?>
