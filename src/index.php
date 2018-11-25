@@ -39,6 +39,7 @@
 	}
 
 	$status = mysqli_fetch_assoc(query('SELECT * FROM status'));
+	$user = mysqli_fetch_assoc(query('SELECT * FROM users WHERE username = ?', 's', $_SESSION['userData']['username']));
 
 	if (isset($_POST['submitStockData'])) {
 		//I don't use a var here bc I want to get fresh data on each request
@@ -56,9 +57,23 @@
 <body>
 	<?php if ($status['canTrade'] == 1): ?>
 		<form method='post'>
-			<h2>Trading Simulator Round INPUT</h2>
+			<h2>Trading Simulator Round <?php echo $status['round']; ?></h2>
 
-			Number of Trades: <input type='number' onclick='adjustTradeTable()' value='0' id='numTrades' name='numTrades' onkeydown="return false"><br><br>
+			<?php
+				echo 'You have ' . $user['balance'] . ' dollars.<br>';
+
+				$showNames = ['Apple', 'Nestle', 'Walmart'];
+				$quotas = ['aprice', 'nprice', 'wprice'];
+				for ($x = 0; $x < 3; $x++) {
+					if ($user['quotatypes'][$x] === '0') {
+						echo 'You have to sell one ' . $showNames[$x] . ' stock for $' . $user[$quotas[$x]] . ' or more to break even.<br>';
+					} else {
+						echo 'You have to buy one ' . $showNames[$x] . ' stock for $' . $user[$quotas[$x]] . ' or less to break even.<br>';
+					}
+				}
+			?>
+
+			<br>Number of Trades: <input type='number' onclick='adjustTradeTable()' value='0' id='numTrades' name='numTrades' onkeydown="return false"><br><br>
 
 			<table border='1' id='tradeTable' style='display: none'>
 				<tbody id='trades'>
