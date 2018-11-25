@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Nov 18, 2018 at 05:34 PM
+-- Generation Time: Nov 25, 2018 at 08:11 PM
 -- Server version: 5.7.21
 -- PHP Version: 5.6.35
 
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS `status` (
 --
 
 INSERT INTO `status` (`round`, `canTrade`) VALUES
-(0, 0);
+(0, 1);
 
 -- --------------------------------------------------------
 
@@ -57,14 +57,6 @@ CREATE TABLE IF NOT EXISTS `trades` (
   `transactType` tinyint(1) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
---
--- Dumping data for table `trades`
---
-
-INSERT INTO `trades` (`trader`, `stock`, `price`, `amt`, `partner`, `transactType`) VALUES
-('hey', 'nestle', 231, 786, 'rewq', 1),
-('hey', 'apple', 342, 321, 'rewq', 0);
-
 -- --------------------------------------------------------
 
 --
@@ -78,16 +70,12 @@ CREATE TABLE IF NOT EXISTS `users` (
   `balance` int(11) NOT NULL DEFAULT '100',
   `apple` int(11) NOT NULL DEFAULT '0',
   `nestle` int(11) NOT NULL DEFAULT '0',
-  `walmart` int(11) NOT NULL DEFAULT '0'
+  `walmart` int(11) NOT NULL DEFAULT '0',
+  `aprice` int(11) NOT NULL DEFAULT '0',
+  `nprice` int(11) NOT NULL DEFAULT '0',
+  `wprice` int(11) NOT NULL DEFAULT '0',
+  `quotatypes` tinytext
 ) ENGINE=InnoDB DEFAULT CHARSET=utf32;
-
---
--- Dumping data for table `users`
---
-
-INSERT INTO `users` (`username`, `password`, `balance`, `apple`, `nestle`, `walmart`) VALUES
-('hey', 'aa0d576b8de5cef4668d69b6b9826ca6bd3f219c', 100, 0, 0, 0),
-('jkl', 'd1e56e00efe7aec303cc36e7b601120b84db554e', 100, 0, 0, 0);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
