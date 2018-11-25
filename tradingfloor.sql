@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS `status` (
 --
 
 INSERT INTO `status` (`round`, `canTrade`) VALUES
-(0, 1);
+(0, 0);
 
 -- --------------------------------------------------------
 
