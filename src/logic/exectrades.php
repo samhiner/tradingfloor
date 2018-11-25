@@ -200,7 +200,9 @@ function startGame() {
 }
 
 function endGame() {
-	query('UPDATE status SET canTrade = 0, round = -1');
+	query('UPDATE status SET canTrade = 0, round = 0');
+	query('UPDATE `users` SET `balance`=100,`apple`=0,`nestle`=0,`walmart`=0,`aprice`=0,`nprice`=0,`wprice`=0,`quotatypes`=NULL WHERE 1');
+	query('DELETE FROM trades');
 }
 
 ?>
