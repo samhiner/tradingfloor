@@ -27,7 +27,6 @@
 		if (isset($_POST['adminAct'])) {
 			if (isset($_SESSION['isAdmin'])) {
 				if ($_POST['adminAct'] === 'End Round') {
-					echo 'sdadsa';
 					endRound();
 				} elseif ($_POST['adminAct'] === 'End Game') {
 					endGame();

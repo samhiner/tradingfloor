@@ -27,7 +27,7 @@ function execTrade($trade) {
 	$buyer = mysqli_fetch_assoc(query('SELECT * FROM users WHERE username = ?', 's', $trade['trader']));
 	$seller = mysqli_fetch_assoc(query('SELECT * FROM users WHERE username = ?', 's', $trade['partner']));
 
-	if (($buyer['balance'] - $trade['price'] >= 0) && ($seller[$trade['stock']] - $trade['amt'] >= 0)) {
+	if ($seller[$trade['stock']] - $trade['amt'] >= 0) {
 		//update buyer's acct
 		query("UPDATE users SET balance = balance - ?, " . $trade["stock"] . " = " . $trade["stock"] . " + ? WHERE username = ?", 'iis',  $trade["price"], $trade["amt"], $trade["trader"]);
 		//update seller's acct
@@ -80,18 +80,75 @@ function endRound() {
 	return matchTrades();
 }
 
+//get $numRand unique random numbers between $min and $max (inclusive)
+//returns an array
+function getRandNums($numRand, $min, $max, $randNums = []) {
+	if (sizeof($randNums) < $numRand) {
+		array_push($randNums, rand($min, $max));
+		$randNums = array_unique($randNums);
+		return getRandNums($numRand, $min, $max, $randNums);
+	} else {
+		return $randNums;
+	}
+}
+
+function getQuota($round, $buying) {
+	//add 4 to make the starting number more reasonable (11 instead of 1)
+	$midPrice = intval(($round + 4) ** 1.5);
+
+	if ($buying) {
+		$quotaLims = [1.05, 1.25];
+	} else {
+		$quotaLims = [0.75, 0.95];
+	}
+
+	return rand($midPrice * $quotaLims[0], $midPrice * $quotaLims[1]);
+}
+
+//TODO refactor a lot
 function orderAssign() {
-	$allUsers = query('SELECT * FROM users'); //TODO this takes everyone who has ever signed up. I need to differentiate acct and profile.
-	
+	$round = mysqli_fetch_array(query('SELECT round FROM status'), MYSQLI_NUM)[0] + 1;
+
+	$allUsers = query('SELECT * FROM users ORDER BY RAND()');
+	$numUsers = mysqli_num_rows($allUsers);
+
+	// FIGURE OUT QHO THE BUYERS WILL BE FOR EACH STOCK
+
+	$buyers = [];
+	//putting ceil on this means that there will be a buyer surplus if there is an odd number of people
+	for ($x = 0; $x < 3; $x++) {
+		array_push($buyers, getRandNums(ceil($numUsers / 2), 0, $numUsers - 1));
+	}
+
+	//ASSIGN EVERYONE THEIR QUOTA
+
+	$x = 0;
 	while ($user = mysqli_fetch_assoc($allUsers)) {
-		?[0], ?[1], ?[2];//TODO should alternate 1 2 3 then 2 3 1 then 3 1 2
-		query('UPDATE users SET aquota = ?, nquota = ?, wquota = ? WHERE username = ?', 'iiis', ?[0], ?[1], ?[2], $user['username']);
+		//this means that if there are an odd number of people there will be one more seller than buyer
+		
+		$type = [];
+		for ($y = 0; $y < 3; $y++) {
+			if (in_array($x, $buyers[$y])) {
+				array_push($type, 1);
+			} else {
+				array_push($type, 0);
+			}
+		}
+
+		query('UPDATE users SET aprice = ?, nprice = ?, wprice = ?, quotatypes = ? WHERE username = ?', 'iiiss', 
+			getQuota($round, $type[0]), 
+			getQuota($round, $type[1]), 
+			getQuota($round, $type[2]), 
+			strval(implode($type)), 
+			$user['username']);
+		$x++;
 	}
 }
 
 function startRound() {
-	//delete any remaining failed trades
+	//delete any remaining failed trades and quotas
 	query('DELETE FROM trades');
+	query("UPDATE users SET aprice = 0, nprice = 0, wprice = 0, quotatypes = '000'");
 
 	orderAssign();
 	
