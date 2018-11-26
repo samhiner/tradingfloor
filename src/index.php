@@ -61,6 +61,9 @@
 
 			<?php
 				echo 'You have ' . $user['balance'] . ' dollars.<br>';
+				echo 'You have ' . $user['apple'] . ' Apple.<br>'
+				echo 'You have ' . $user['nestle'] . ' Nestle.<br>'
+				echo 'You have ' . $user['walmart'] . ' Walmart.<br>'
 
 				$showNames = ['Apple', 'Nestle', 'Walmart'];
 				$quotas = ['aprice', 'nprice', 'wprice'];
