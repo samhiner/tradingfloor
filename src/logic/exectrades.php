@@ -20,12 +20,14 @@ function flipTradeSide($trade) {
 
 function execTrade($trade) {
 	//make sure we are looking at the buyers perspective
-	if ($trade['transactType'] === 0) {
+	if (($trade['transactType'] === 0) || ($trade['transactType'] === 2)) {
 		$trade = flipTradeSide($trade);
 	}
 
 	$buyer = mysqli_fetch_assoc(query('SELECT * FROM users WHERE username = ?', 's', $trade['trader']));
 	$seller = mysqli_fetch_assoc(query('SELECT * FROM users WHERE username = ?', 's', $trade['partner']));
+
+	echo $seller[$trade['stock']] . ' ' . $trade['amt'];
 
 	if ($seller[$trade['stock']] - $trade['amt'] >= 0) {
 		//update buyer's acct
@@ -43,6 +45,13 @@ function matchTrades() {
 	$register = [];
 	$failedTrades = [];
 	while ($row = mysqli_fetch_array($trades, MYSQLI_ASSOC)) {
+		if (($row['transactType'] === 2) || ($row['transactType'] === 3)) {
+			if (!execTrade()) {
+				array_push($failedTrades, $row);
+			}
+			continue;
+		}
+
 		$oppTrade = flipTradeSide($row);
 		$match = array_search($oppTrade, $register);
 
@@ -51,7 +60,12 @@ function matchTrades() {
 			$tradeSuccess = execTrade($row);
 
 			if (!$tradeSuccess) {
-				$row['transactType'] = 2;
+				if ($row['transactType'] === 1) {
+					$row['transactType'] = 3;
+				} else if ($row['transactType'] === 0) {
+					$row['transactType'] = 2;
+				}
+
 				array_push($failedTrades, $row);
 			}
 		} else {
