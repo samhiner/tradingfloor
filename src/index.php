@@ -103,7 +103,15 @@
 							<input type='number' id='amt' name='amt[]' style='width: 70px' onkeydown='return (event.keyCode != 190 && event.keyCode != 189);' onkeyup='return numInputVal(event.target)' onclick='return numInputVal(event.target)'>
 						</td>
 						<td>
-							<input type='text' name='partner[]' style='width: 150px'>
+							<select name='partner[]'>
+								<option disabled selected>Choose One</option>
+								<?php
+									$allUsers = query('SELECT * FROM users');
+									while ($row = mysqli_fetch_assoc($allUsers)) {
+										echo '<option value="' . $row['username'] . '">' . $row['username'] . '</option>';
+									}
+								?>
+							</select>
 						</td>
 						<td>
 							<select name='transactType[]'>
