@@ -33,9 +33,6 @@ function execTrade($trade) {
 		query("UPDATE users SET balance = balance + ?, " . $trade["stock"] . " = " . $trade["stock"] . " - ? WHERE username = ?", 'iis',  $trade["price"], $trade["amt"], $trade["partner"]);
 		return true;
 	} else {
-		echo 'ok';
-		var_dump($seller[$trade['stock']], $trade['stock'], $seller);
-		echo 'doke<br>';
 		return false;
 	}
 }
@@ -87,7 +84,6 @@ function collectQuotas() {
 
 	while ($user = mysqli_fetch_assoc($allUsers)) {
 		if ($user['quotatypes'] === NULL) {
-			echo 'this is a huge problem';
 			continue;
 		}
 
