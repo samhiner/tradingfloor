@@ -23,13 +23,14 @@
 		}
 
 		//TODO this can be broken if one value is missing in every column at different places
+		//TODO make sure that you can't do anything when round is over from backend
 		//make sure that there is the same number of answers for each column
 		if (count(array_unique($inputs)) == 1) {
 			for ($x = 0; $x < $inputs[0]; $x++) {
 				if ($_POST['price'][$x] > 0 && $_POST['amt'][$x] > 0) {
 					query('INSERT INTO trades(trader, stock, price, amt, partner, transactType) VALUES(?, ?, ?, ?, ?, ?)', 'ssiisi', $_SESSION['userData']['username'], $_POST['stock'][$x], $_POST['price'][$x], $_POST['amt'][$x], $_POST['partner'][$x], $_POST['transactType'][$x]);
 				} else {
-					echo "<script>alert('If see this, please contact your game administrator. Non-natural number error.');</script>";
+					echo "<script>alert('If you see this, please contact your game administrator. Non-natural number error.');</script>";
 				}
 			}
 			echo "<script>alert('Table successfully submitted!');</script>";

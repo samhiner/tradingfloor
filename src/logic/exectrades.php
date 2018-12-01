@@ -24,7 +24,6 @@ function execTrade($trade) {
 		$trade = flipTradeSide($trade);
 	}
 
-	$buyer = mysqli_fetch_assoc(query('SELECT * FROM users WHERE username = ?', 's', $trade['trader']));
 	$seller = mysqli_fetch_assoc(query('SELECT * FROM users WHERE username = ?', 's', $trade['partner']));
 
 	if ($seller[$trade['stock']] - $trade['amt'] >= 0) {
@@ -34,6 +33,9 @@ function execTrade($trade) {
 		query("UPDATE users SET balance = balance + ?, " . $trade["stock"] . " = " . $trade["stock"] . " - ? WHERE username = ?", 'iis',  $trade["price"], $trade["amt"], $trade["partner"]);
 		return true;
 	} else {
+		echo 'ok';
+		var_dump($seller[$trade['stock']], $trade['stock'], $seller);
+		echo 'doke<br>';
 		return false;
 	}
 }
@@ -51,8 +53,11 @@ function matchTrades() {
 			$tradeSuccess = execTrade($row);
 
 			if (!$tradeSuccess) {
-				$row['transactType'] = 2;
-				array_push($failedTrades, $row);
+				//$row['transactType'] = 2;
+				//array_push($failedTrades, $row);
+
+				array_push($register, $row);
+				array_push($register, flipTradeSide($row));
 			}
 		} else {
 			array_push($register, $row);
@@ -82,6 +87,7 @@ function collectQuotas() {
 
 	while ($user = mysqli_fetch_assoc($allUsers)) {
 		if ($user['quotatypes'] === NULL) {
+			echo 'this is a huge problem';
 			continue;
 		}
 
@@ -186,6 +192,8 @@ function orderAssign() {
 }
 
 function startRound() {
+	collectQuotas();
+
 	//delete any remaining failed trades and quotas
 	query('DELETE FROM trades');
 	query("UPDATE users SET aprice = 0, nprice = 0, wprice = 0, quotatypes = NULL"); //TODO is this necessary?
@@ -200,6 +208,10 @@ function startGame() {
 }
 
 function endGame() {
+	collectQuotas();
+
+	//TODO show stats here
+
 	query('UPDATE status SET canTrade = 0, round = 0');
 	query('UPDATE `users` SET `balance`=100,`apple`=0,`nestle`=0,`walmart`=0,`aprice`=0,`nprice`=0,`wprice`=0,`quotatypes`=NULL WHERE 1');
 	query('DELETE FROM trades');

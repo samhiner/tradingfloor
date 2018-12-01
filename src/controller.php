@@ -39,9 +39,8 @@
 				} elseif ($_POST['adminAct'] === 'Match Trades') {
 					query($_POST['adminSQL']);
 					matchTrades();
-					collectQuotas();
 				}
-				//echo "<meta http-equiv='refresh' content='0'>";
+				echo "<meta http-equiv='refresh' content='0'>";
 			}
 		}
 
@@ -61,7 +60,9 @@
 					<input type='submit' name='adminAct' value='End Round'><br><br>
 				<?php else: ?>
 					<input type='submit' name='adminAct' value='Start Round'><br><br>
-					<input type='submit' name='adminAct' value='End Game'><br><br>
+					
+					<button onmousedown='if (confirm("Are you sure you want to end the game?")) { document.getElementById("endGame").click(); }'>End Game</button>
+					<input style='display: none;' id='endGame' type='submit' name='adminAct' value='End Game'><br><br>
 				<?php endif; ?>
 
 				<?php if ($status['canTrade'] != 1): ?>
@@ -99,5 +100,12 @@
 		</form>
 
 	<?php endif; ?>
+	<script>
+		//makes sure client's forms are not submitted again during jQuery refresh
+		//aka this blocks the "resubmit on refresh" feature in Chrome
+		if (window.history.replaceState) { 
+			window.history.replaceState(null, null, window.location.href); 
+		}
+	</script>
 </body>
 </html>
