@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <?php
 
+	//TODO fix me later
+
+	if ($_SESSION['valid'] != 'yay') {
+		$_SESSION['userData'] = '';
+		$_SESSION['valid'] = 'yay';
+	}
+	
+	//END TODO
+
 	include('logic/verify.php');
 
 	//insert data into trade log
