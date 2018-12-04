@@ -109,6 +109,10 @@
 								<?php
 									$allUsers = query('SELECT * FROM users');
 									while ($row = mysqli_fetch_assoc($allUsers)) {
+										if ($row['username'] === $_SESSION['userData']['username']) {
+											continue;
+										}
+
 										echo '<option value="' . $row['username'] . '">' . $row['username'] . '</option>';
 									}
 								?>
