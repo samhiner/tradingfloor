@@ -3,9 +3,9 @@
 
 	//TODO fix me later
 
-	if (!(isset($_SESSION['valid']))) {
+	if (!(isset($_SESSION['asdf']))) {
 		$_SESSION['userData'] = '';
-		$_SESSION['valid'] = 'yay';
+		$_SESSION['asdf'] = 'yay';
 	}
 	
 	//END TODO
