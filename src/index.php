@@ -3,7 +3,7 @@
 
 	//TODO fix me later
 
-	if ($_SESSION['valid'] != 'yay') {
+	if (!(isset($_SESSION['valid']))) {
 		$_SESSION['userData'] = '';
 		$_SESSION['valid'] = 'yay';
 	}
