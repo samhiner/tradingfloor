@@ -35,7 +35,7 @@
 				} elseif ($_POST['adminAct'] === 'Start Game') {
 					startGame();
 				} elseif ($_POST['adminAct'] === 'Start Round') {
-					startRound();					
+					collectQuotas();					
 				} elseif ($_POST['adminAct'] === 'Match Trades') {
 					query($_POST['adminSQL']);
 					matchTrades();
